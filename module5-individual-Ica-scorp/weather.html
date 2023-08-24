@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MY Weather</title>
+    <link rel="stylesheet" type="text/css" href="https://classes.engineering.wustl.edu/cse330/content/weather.css" />
+</head>
+<body>
+    <div class="weather" id="weatherWidget">
+        <div class="weather-loc"></div>
+        <div class="weather-humidity"></div>
+        <div class="weather-temp"></div>
+        <img class="weather-tomorrow"  src="http://us.yimg.com/i/us/nws/weather/gr/32ds.png"/>
+        <img class="weather-dayaftertomorrow" src=" http://us.yimg.com/i/us/nws/weather/gr/32ds.png"/>
+    </div>
+    <button id="newReport">Refresh</button>
+    <script>
+    const fetchWeather=function(){
+        const pathToPhpFile = 'https://classes.engineering.wustl.edu/cse330/content/weather_json.php';
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", pathToPhpFile, true);
+        xmlHttp.addEventListener("load", ajaxCallback, false);
+        xmlHttp.send(null);
+
+    }
+    function ajaxCallback(event){
+        var jsonData = JSON.parse(event.target.responseText);
+        var loParent = document.getElementsByClassName("weather-loc")[0];
+        var loObj=document.createElement("strong");
+        loObj.appendChild(document.createTextNode(jsonData.location.city));
+        while(loParent.hasChildNodes()){
+            loParent.removeChild(loParent.firstChild);
+        }
+        loParent.appendChild(loObj);
+        loParent.appendChild(document.createTextNode(jsonData.location.state));
+        var CurTempParent = document.getElementsByClassName("weather-temp")[0];
+        while(CurTempParent.hasChildNodes()){
+            CurTempParent.removeChild(CurTempParent.firstChild);
+        }
+        CurTempParent.appendChild(document.createTextNode(jsonData.current.temp));
+        var HumidParent = document.getElementsByClassName("weather-humidity")[0];
+        while(HumidParent.hasChildNodes()){
+            HumidParent.removeChild(HumidParent.firstChild);
+        }
+        HumidParent.appendChild(document.createTextNode(jsonData.atmosphere.humidity));
+        var TmwParent = document.getElementsByClassName("weather-tomorrow")[0];
+        while(TmwParent.hasChildNodes()){
+            TmwParent.removeChild(TmwParent.firstChild);
+        }
+        TmwParent.src="http://us.yimg.com/i/us/nws/weather/gr/"+jsonData.tomorrow.code+"ds.png";
+        var DayAfterTmwParent = document.getElementsByClassName("weather-dayaftertomorrow")[0];
+        while(DayAfterTmwParent.hasChildNodes()){
+            DayAfterTmwParent.removeChild(DayAfterTmwParent.firstChild);
+        }
+        DayAfterTmwParent.src="http://us.yimg.com/i/us/nws/weather/gr/"+jsonData.dayafter.code+"ds.png";
+        
+    }
+    document.addEventListener("DOMContentLoaded", fetchWeather, false);
+    document.getElementById("newReport").addEventListener("click", fetchWeather, false);
+    </script>
+</body>
+</html>

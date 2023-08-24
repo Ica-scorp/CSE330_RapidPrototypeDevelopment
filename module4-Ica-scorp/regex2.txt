@@ -1,0 +1,1 @@
+\b[^\d\W]*[AEIOUaeiou]{3,}[^\d\W]*\b

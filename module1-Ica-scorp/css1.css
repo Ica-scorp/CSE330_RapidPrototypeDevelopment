@@ -1,0 +1,11 @@
+body{
+	width: 760px; /* how wide to make your web page */
+	background-color: rgb(137, 183, 226); /* what color to make the background */
+	margin: 0 auto;
+	padding: 0;
+	font:30px Verdana, sans-serif; /* default font */
+    }
+p{
+	color: blueviolet;
+	text-shadow: 1px 1px 2px black;
+}

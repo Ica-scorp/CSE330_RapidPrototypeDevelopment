@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        img{
+            max-height:100px;
+            width: auto;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        input[type="file"] 
+        {
+        }
+
+        .upload-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .upload-button:hover {
+            background-color: #0069d9;
+        }
+        #user_panel_div {
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+        #not_login_div, #is_login_div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #user_title_p {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0;
+        }
+        #create_room_panel_div {
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+        #create_room_form_div {
+            margin-top: 10px;
+        }
+        #current_room_div {
+            padding: 10px;
+        }
+        #current_room_dropdown {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        #message_input {
+            padding: 5px;
+            margin-right: 10px;
+            flex-grow: 1;
+            border-radius: 5px;
+        }
+        select {
+            margin-right: 10px;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        #leave_room_button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #bdac0fb9;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        #create_room_button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #cancel_create_room_button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background-color: #2959c2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #create_room_submit_button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/get_info.js"></script>
+<script src="js/create_socket.js"></script>
+<script src="js/user_panel.js"></script>
+<script src="js/create_room.js"></script>
+<script src="js/display.js"></script>
+<script src="js/room_list.js"></script>
+<script src="js/room_panel.js"></script>
+</head>
+<body>
+    <div id="user_broadcast_div" style="display:none">
+        <p id="broadcast_content">broadcast_content</p >
+    </div>
+    <div id="user_panel_div">
+        <div id="not_login_div" style="display: none">
+            <div id="login_panel_div">
+                <h3>Login</h3>
+                <br>
+                <div id="login_div">
+                    <label >Username:</label>
+                    <input type="text" id="login_username" name="username" required><br>
+                    <button id="login_submit_button">Submit</button>
+                </div>
+                <script>
+                     document.getElementById("login_submit_button").onclick = user_login;
+                </script>
+            </div>
+        </div>
+        <div id="is_login_div" style="display: none">
+            <p id="user_title_p"></p>
+            <button id="logout_button">Logout</button>
+        </div>
+        <script>
+            document.getElementById("logout_button").onclick = user_logout;
+       </script>
+    </div>
+    <div id="create_room_panel_div" style="display: none">
+        <button id="create_room_button">Create Room</button>
+        <div id="create_room_form_div" style="display:none">
+            <label>Room name:</label>
+            <input type="text" id = "room_name" name="room_name" required><br>
+            <input type="radio" id="room_type_public_radio" value="public" name="room_type" checked> <label>public</label>
+            <input type="hidden" id="room_type" value="public">
+            <input type="radio" id="room_type_private_radio" value="private" name="room_type">  <label>private</label><br>
+            <div id="room_password_div" style="display:none">
+                <label>Room password:</label>
+                <input type="password" id="room_password" name="room_password" value=""><br>
+            </div>
+            <button id="create_room_submit_button">Submit</button>
+            <button id="cancel_create_room_button">Cancel</button>
+        </div>
+        <script>
+            document.getElementById("create_room_button").onclick = get_create_room_form;
+            document.getElementById("cancel_create_room_button").onclick = cancel_create_room_form;
+            document.getElementById("room_type_private_radio").addEventListener('click',function(){
+                document.getElementById("room_password_div").setAttribute("style","");
+                document.getElementById("room_type").setAttribute("value","private");
+            });
+            document.getElementById("room_type_public_radio").addEventListener('click',function(){
+                document.getElementById("room_password_div").setAttribute("style","display:none");
+                document.getElementById("room_type").setAttribute("value","public");
+            });
+            document.getElementById("create_room_submit_button").onclick = create_room;
+        </script>
+    </div>
+    <div id="room_panel_div" style="display:none">
+        <div id="room_display_div">
+        </div>
+    </div>
+    <div id="current_room_div" style="display:none">
+        <h2 id="current_room_name">current_room_name</h2>
+        <p id="current_room_creater"></p>
+        <div id="current_room_user_list_div"></div>
+        <div id="current_room_message_list_div"></div>
+        <button id="leave_room_button">Leave the room</button>
+        
+        <div id="current_room_dropdown">
+            <input type="text" id="message_input"/>
+            <button onclick="sendMessage()">send</button>
+            <a id = "select_title">Select users to send messages to</a><br>
+            <select id="mySelect">
+                <option value="send_to_all_users" >all users in the room</option>
+            </select>
+            <input type ="file" id="file_input" accept="image/png, image/jpeg"/> 
+        </div>
+        <script>
+            document.getElementById("leave_room_button").onclick = leave_room;
+            const fileInput = document.querySelector('#file_input');
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                const filename = file.name;
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = () => {
+                    const imageData = reader.result.split(',')[1];
+                    socketio.emit('upload_image_to_server', imageData,filename,global_username, global_current_room);
+                };
+            });
+            socketio.on('image_upload_to_client', (image_url,username_r) => {
+                let myDiv=document.getElementById("current_room_message_list_div");
+                while(myDiv.childElementCount>5){
+                    myDiv.removeChild(myDiv.firstChild);
+                }
+                image_div = document.createElement("div");
+                image_div.setAttribute("id",username_r+"_img");
+
+                image_user=document.createElement("p");
+                image_user.innerHTML=username_r+":";
+                const image_data=document.createElement("img");
+                image_data.src=image_url;
+
+                myDiv.appendChild(document.createElement("hr"));
+                image_div.appendChild(image_user);
+                image_div.appendChild(image_data);
+
+                myDiv.appendChild(image_div);
+            });
+        </script>
+    </div>
+    <script>
+        socketio.on("login_success_braodcast_to_client", function(data){
+            document.getElementById("broadcast_content").innerHTML="user: "+data.login_success_user+" just logged in!";
+            const remind = document.getElementById("user_broadcast_div");
+            if(remind.style.display=='none'){
+                remind.style.display = 'block';
+                setTimeout(() => {
+                remind.style.display = 'none';
+                }, 3000);
+            }else{
+                setTimeout(() => {
+                remind.style.display = 'block';
+                }, 3000);
+                setTimeout(() => {
+                remind.style.display = 'none';
+                }, 3000);
+            }
+            
+        }); 
+    socketio.on("logout_success_braodcast_to_client", function(data){
+            document.getElementById("broadcast_content").innerHTML="user: "+data.logout_success_user+" just logged out";
+            const remind = document.getElementById("user_broadcast_div");
+
+
+            if(remind.style.display=='none'){
+                remind.style.display = 'block';
+                setTimeout(() => {
+                remind.style.display = 'none';
+                }, 3000);
+            }else{
+                setTimeout(() => {
+                remind.style.display = 'block';
+                }, 3000);
+                setTimeout(() => {
+                remind.style.display = 'none';
+                }, 3000);
+            }
+        });  
+        //let every user get their room update
+        socketio.on("update_room_info",function() {display()});
+        socketio.on("kick_user_to_client", function(data){
+            if(data.kick_user == global_username){
+                leave_room();
+                ban_to_talk = "0";
+            }
+        });
+
+        //when the creater leave, the room will close
+        socketio.on("close_room_to_client", function(){  
+            global_current_room = "no_room";
+            global_is_creater = "0";
+            ban_to_talk = "0";
+            display();
+        });
+
+        //if the user are being muted, set ban_to_talk to 1
+        socketio.on("mute_user_to_client", function(data){     
+            if(data.mute_user == global_username){
+                ban_to_talk = "1";
+            }   
+            display();
+        });
+
+        //send a message to client
+        function sendMessage(){
+            socketio.emit("get_mute_state_to_server",{room_name, global_current_room, username: global_username});
+            if(ban_to_talk == "1"){
+                return ;
+            }
+            var msg = document.getElementById("message_input").value;
+            if(msg!=""){
+                var e = document.getElementById("mySelect");
+                var value = e.value;
+                if(value=="all users"){
+                    socketio.emit("send_public_message_to_server", {room_name:global_current_room, message:msg});
+                }else{
+                    socketio.emit("send_private_message_to_server", {room_name:global_current_room, username: value, message:msg});
+                }
+            }else{
+                console.log("cannot send an empty messgae");
+            }
+        }
+        socketio.on("send_public_message_to_client",function(data) {
+            //Append an HR thematic break and the escaped HTML of the new message
+            let myDiv=document.getElementById("current_room_message_list_div");
+            console.log(myDiv.childElementCount);
+            while(myDiv.childElementCount>5){
+                myDiv.removeChild(myDiv.firstChild);
+            }
+            myDiv.appendChild(document.createElement("hr"));
+            myDiv.appendChild(document.createTextNode(data['send_user']+": "+data['message']));
+        });
+        socketio.on("send_private_message_to_client",function(data) {
+            //Append an HR thematic break and the escaped HTML of the new message
+            let myDiv=document.getElementById("current_room_message_list_div");
+            let target_user=data.username;
+            if(global_username==target_user){
+            console.log(myDiv.childElementCount);
+            while(myDiv.childElementCount>5){
+                myDiv.removeChild(myDiv.firstChild);
+            }
+            myDiv.appendChild(document.createElement("hr"));
+            myDiv.appendChild(document.createTextNode("(private message)"+data['send_user']+": "+data['message']));
+            }
+            
+        });
+
+        document.addEventListener('DOMContentLoaded', display, false);
+    </script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Date</title>
+    <style>
+        * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        }
+        div{
+            margin:10px;
+        }
+        body {
+        font-family: sans-serif;
+        background-color: #f5f5f5;
+        }
+
+        .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        }
+
+        header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        }
+
+        .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        }
+
+        nav {
+        display: flex;
+        }
+
+        nav a {
+        text-decoration: none;
+        color: #333;
+        margin-left: 20px;
+        font-size: 16px;
+        transition: color 0.3s ease-in-out;
+        }
+
+        nav a:hover {
+        color: #f00;
+        }
+
+        h1 {
+        font-size: 48px;
+        font-weight: bold;
+        text-align: center;
+        margin: 50px 0;
+        }
+
+        p {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        }
+
+        button {
+        background-color: #7ab8cc;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+        }
+
+        button:hover {
+        background-color: #333;
+        }
+
+        footer {
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        }
+        #calendar {
+            /* display: grid; */
+            grid-template-columns: repeat(7, 1fr);
+            grid-gap: 5px;
+            width: 50%;
+            margin: 5px;
+            grid-template-rows: 100px 100px;
+            grid-column: 1;
+            grid-row: 1;
+            /*float: left;*/
+
+        }
+        #dateTitle{
+            grid-column: 2;
+        }
+        input {
+            font-size: 16px;
+            margin: 10px;
+            padding: 10px 20px;
+        }
+        #eventsBody{
+            grid-column: 1;
+            grid-row: 2;
+        }
+        #userlink_div{
+            
+            grid-column: 2;
+            grid-row: 2;
+            margin: 10px;
+
+        }
+        #calendar table {
+            border-collapse: collapse;
+        }
+
+        #calendar th,
+        #calendar td {
+            text-align: center;
+            padding: 20px;
+            font-size:20px;
+        }
+        #display{
+            display: grid;
+            margin-left: 10%;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+        }
+        #calendar th {
+            font-weight: bold;
+            background-color: #eee;
+        }
+
+        #calendar td.other-month {
+            background-color: #ddd;
+        }
+
+        .header {
+            margin-left: 10%;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #month {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0;
+        }
+        #userPanel{
+            border: 1px solid#7ab8cc;
+            margin-left: 10%;
+            width: 20%;
+        }
+        #eventCreationDiv{
+            
+            border: 1px solid#7ab8cc;
+            margin: 10px;
+            grid-column: 2;
+            grid-row: 1;
+        }
+        #eventcreate-form{
+            margin: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- the user panel, don't display by defalut and change according to the login state -->
+    <div id="userPanel">
+        <div id="nouser" style="display: none">
+            <button id="loginbutton">Login</button>
+            <script>
+                document.getElementById("loginbutton").addEventListener("click", function() {
+                    nouserPanel = document.getElementById("nouser").setAttribute("style","display: none");
+                    loginPanel = document.getElementById("loginPanel").setAttribute("style","");
+                    document.getElementById("userPanel").setAttribute("style","float:right; margin-right:25%;");
+                });
+            </script>
+            <button id="signupbutton">Signup</button>
+            <script>
+                document.getElementById("signupbutton").addEventListener("click", function() {
+                    nouserPanel = document.getElementById("nouser").setAttribute("style","display: none;");
+                    loginPanel = document.getElementById("signupPanel").setAttribute("style","");
+                    document.getElementById("userPanel").setAttribute("style","float:right; margin-right:25%;");
+                });
+            </script>
+        </div>
+        <div id="hasuser" style="display: none">
+            <a href="logout.php">Logout</a>
+        </div>
+        <div id="loginPanel" style="display: none">
+            <h3>Login</h3>
+            <br>
+            <form id="login-form">
+                <label >Username:</label>
+                <input type="text" id="login-username" name="username" required><br>
+                <label >Password:</label>
+                <input type="password" id="login-password" name="password" required><br>
+                <button type="submit">Submit</button>
+            </form>
+            <button id="loginbackbutton">Back</button>
+            <script>
+                document.getElementById("loginbackbutton").addEventListener("click", function() {
+                    nouserPanel = document.getElementById("nouser").setAttribute("style","");
+                    loginPanel = document.getElementById("loginPanel").setAttribute("style","display: none");
+                    document.getElementById("userPanel").setAttribute("style","");
+                });
+                const loginForm = document.getElementById("login-form");
+                loginForm.addEventListener("submit", (event) => {
+                    
+                    event.preventDefault();
+
+                    const username = document.getElementById("login-username").value;
+                    const password = document.getElementById("login-password").value;
+                    
+                    //console.log(data.success);
+                    fetch('Login_ajax.php', {
+                    method: 'POST',
+                    body: JSON.stringify({ "username": username, "password": password })
+                    })
+                    .then(response => response.json())
+                    .then(data =>{
+                    
+                    //console.log(data.success);
+                    if (data.success == true) {
+                        window.location.replace('home.html');
+                    } else {
+                        alert('Invalid login credentials. Please try again.');
+                    }
+                    });
+                });
+
+            </script>
+        </div>
+        <div id="signupPanel" style="display: none">
+            <h3>Signup</h3>
+            <form id="signup-form">
+                <label >Username:</label>
+                <input type="text" id="signup-username" name="username" required><br>
+                <label >Password:</label>
+                <input type="password" id="signup-password" name="password" required><br>
+                <button type="submit">Submit</button>
+            </form>
+            <button id="signupbackbutton">Back</button>
+            <script>
+                document.getElementById("signupbackbutton").addEventListener("click", function() {
+                    nouserPanel = document.getElementById("nouser").setAttribute("style","");
+                    loginPanel = document.getElementById("signupPanel").setAttribute("style","display: none");
+                    document.getElementById("userPanel").setAttribute("style","");
+                });
+
+                const signupForm = document.getElementById('signup-form');
+                
+                signupForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    
+                    const username = document.getElementById('signup-username').value;
+                    const password = document.getElementById('signup-password').value;
+                    
+                    fetch('Signup_ajax.php', {
+                    method: 'POST',
+                    body: JSON.stringify({ "username": username, "password": password })
+                    })
+                    .then(response => response.json())
+                    .then(data =>{
+                    if (data.success == true) {
+                        window.location.replace('home.html');
+                    } else {
+                        alert('Registration failed. Please try again.');
+                    }
+                    });
+                });
+            </script>
+        </div>
+    </div>
+    <!-- create vairable used in all javascript -->
+    <script>
+        var login = false;
+        var userName = " ";
+        var userId = 0;
+    </script>
+    <script src="isLogin.js"></script>
+    <script  src="userPanel.js"></script>
+    <div class="header">
+        <h2 id="month">month</h2>
+        <div>
+            <button id="pre_month_btn">&#10094;</button>
+            <button id="next_month_btn">&#10095;</button>
+        </div>
+    </div>
+    
+    <!-- the table to display the calendar -->
+    <div id="display">
+        <div id="calendar">
+            <table id="calendar-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body"></tbody>
+            </table>
+        </div>
+
+        <!-- the form to create event -->
+        <div id="eventCreationDiv" style="display: none">
+            <form id="eventcreate-form">
+                <h3>Create Event</h3>
+                <br>
+                <label for="eTitle">Title:</label>
+                <input type="text" id="eTitle" required><br>
+                <label for="eContent">Content:</label>
+                <input type="text" id="eContent" required><br>
+                <label for="eStartTime">Start Time:</label>
+                <input type="time" id="eStartTime" required><br>
+                <label for="eEndTime">End Time:</label><!--judge if start time is earlier?-->
+                <input type="time" id="eEndTime" required><br>
+                <label for="eDate">Event Date:</label>
+                <input type="date" id="eDate" required><br>
+                <label for="eGroup">Other involve member:</label>
+                <input type="text" id="eGroup" placeholder="seperate by comma"/>
+
+                <button type="submit">Create Event</button>
+
+                
+            </form>
+        </div>
+
+        <!-- the div to display all the events in that day -->
+        <div id="eventsBody" style="margin:0;"></div>
+    </div>
+    <script>
+        isLogin().then(response => {
+            if(response.success == true){
+                document.getElementById("eventCreationDiv").setAttribute("style","");
+            }
+        });
+    </script>
+    <script  src="display.js"></script> <!-- load the JavaScript file -->
+    <script  src="userLinked.js"></script>
+    <script>
+        //load userPanel since the start of the page
+        document.addEventListener('DOMContentLoaded', getUserPanel, false);
+        document.getElementById("eventcreate-form").addEventListener("submit", event=>{event.preventDefault(); createEvent();},false);
+    </script>
+</body>
+</html>

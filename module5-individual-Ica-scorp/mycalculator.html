@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MY CALCULATOR</title>
+</head>
+<body>
+    <div id="myCal">
+
+        <p>
+            <label >Firt number</label>
+            <input type="number"  id="num1" placeholder="default: 0"/>
+        </p>
+        <p>   
+            <label>Second number</label>
+            <input type="number" id="num2" placeholder="default: 0"/>
+        </p>
+        <p>
+            <input type="radio" name="selection" value="addition">
+            <label >Addition</label>
+            <input type="radio" name="selection" value="subtraction">
+            <label >Subtraction</label>
+            <input type="radio" name="selection" value="multiplication">
+            <label >Multiplication</label>
+            <input type="radio" name="selection" value="division">
+            <label >Division</label>
+        </p>
+        <p id="result"></p>
+    </div>
+    <script>
+        function calculate(){
+            let n1=Number(document.getElementById("num1").value);
+            let n2=Number(document.getElementById("num2").value);
+            let selection="invalid";
+            let list=document.getElementsByName("selection");
+            for(op of list){
+                if(op.checked){
+                    selection=op.value;
+                }
+            }
+	        if(selection=="addition"){
+                document.getElementById("result").textContent=n1+n2;
+            }
+            if(selection=="subtraction"){
+                document.getElementById("result").textContent=n1-n2;
+            }
+            if(selection=="multiplication"){
+                document.getElementById("result").textContent=n1*n2;
+            }
+            if(selection=="division"){
+                if(n2==0){
+                    document.getElementById("result").textContent="";
+                    alert("the divisor cannot be zero!");
+
+                }
+                else{
+                    document.getElementById("result").textContent=n1/n2;
+                }
+            }
+
+        }
+        document.addEventListener("change", calculate);
+    </script>
+</body>
+</html>
